@@ -213,7 +213,7 @@ class _HomePageState extends State<HomePage> {
             child: CircleAvatar(
               radius: 80,
               backgroundColor: AppColors.surface,
-              backgroundImage: const AssetImage('assets/images/adhii.jpeg'),
+              backgroundImage: const AssetImage('assets/images/profile.jpg'),
               onBackgroundImageError: (exception, stackTrace) {
                 // Handle missing image gracefully
               },
