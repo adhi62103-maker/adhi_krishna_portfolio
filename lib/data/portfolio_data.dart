@@ -69,6 +69,11 @@ class PortfolioData {
     "Material Design",
     "Git & GitHub",
     "Responsive UI",
+    "REST API Integration",
+    "MVC Architecture",
+    "MVVM Architecture",
+    "Clean Architecture",
+    "AI Integration",
   ];
 
   static const List<Service> services = [
@@ -95,6 +100,18 @@ class PortfolioData {
       description:
           "Implementing authentication, cloud database, and local storage solutions like Hive.",
       iconName: "cloud",
+    ),
+    Service(
+      title: "API Integration",
+      description:
+          "Integrating REST APIs and handling HTTP requests, JSON parsing, and data synchronization with backend services.",
+      iconName: "cloud",
+    ),
+    Service(
+      title: "AI Integration",
+      description:
+          "Integrating AI and machine learning capabilities such as text generation, image processing, and predictive models into Flutter apps.",
+      iconName: "layers",
     ),
   ];
 

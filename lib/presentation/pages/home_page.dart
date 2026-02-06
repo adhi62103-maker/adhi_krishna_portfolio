@@ -6,6 +6,9 @@ import 'package:adhi_krishna_portfolio/core/utils/download_helper.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:adhi_krishna_portfolio/core/widgets/animated_on_scroll.dart';
+import 'package:adhi_krishna_portfolio/core/widgets/floating_widget.dart';
+import 'package:adhi_krishna_portfolio/core/widgets/underwater_background.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -53,14 +56,7 @@ class _HomePageState extends State<HomePage> {
               child: const Icon(Icons.arrow_upward),
             ).animate().scale()
           : null,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF0F172A), AppColors.background],
-          ),
-        ),
+      body: UnderwaterBackground(
         child: SingleChildScrollView(
           controller: _scrollController,
           physics: const BouncingScrollPhysics(),
@@ -172,27 +168,6 @@ class _HomePageState extends State<HomePage> {
                     FontAwesomeIcons.whatsapp,
                     "https://wa.me/${PortfolioData.phone.replaceAll(RegExp(r'\s+'), '')}",
                   ),
-                  const SizedBox(width: 8),
-                  FilledButton.icon(
-                    onPressed: () => DownloadUtils.downloadResume(
-                      PortfolioData.resumeLink,
-                      'Adhi_Krishna_Resume.pdf',
-                    ),
-                    icon: const Icon(Icons.download, size: 18),
-                    label: const Text("Resumé"),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                      foregroundColor: AppColors.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        side: const BorderSide(color: AppColors.primary),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                    ),
-                  ).animate().fadeIn(delay: 650.ms).slideY(begin: 0.2),
                 ],
               ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.2),
               const SizedBox(height: 16),
@@ -217,30 +192,34 @@ class _HomePageState extends State<HomePage> {
         ),
 
         const SizedBox(width: 48),
-        Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.5),
-              width: 4,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.2),
-                blurRadius: 20,
-                spreadRadius: 5,
+        FloatingWidget(
+          amplitude: 8,
+          phase: 0.1,
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.5),
+                width: 4,
               ),
-            ],
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.2),
+                  blurRadius: 20,
+                  spreadRadius: 5,
+                ),
+              ],
+            ),
+            child: CircleAvatar(
+              radius: 80,
+              backgroundColor: AppColors.surface,
+              backgroundImage: const AssetImage('assets/images/adhii.jpeg'),
+              onBackgroundImageError: (exception, stackTrace) {
+                // Handle missing image gracefully
+              },
+            ),
           ),
-          child: CircleAvatar(
-            radius: 80,
-            backgroundColor: AppColors.surface,
-            backgroundImage: const AssetImage('assets/images/adhii.jpeg'),
-            onBackgroundImageError: (exception, stackTrace) {
-              // Handle missing image gracefully
-            },
-          ),
-        ).animate().fadeIn(delay: 600.ms).scale(),
+        ).animate().fadeIn(delay: 600.ms),
       ],
     );
   }
@@ -285,7 +264,7 @@ class _HomePageState extends State<HomePage> {
                   'Adhi_Krishna_ATS_Resume.pdf',
                 ),
                 icon: const Icon(Icons.description_rounded, size: 20),
-                label: const Text("Download ATS-Friendly Resumé"),
+                label: const Text("Download Resumé"),
               ),
             ],
           ),
@@ -320,44 +299,49 @@ class _HomePageState extends State<HomePage> {
           itemCount: PortfolioData.services.length,
           itemBuilder: (context, index) {
             final service = PortfolioData.services[index];
-            return Card(
-              color: AppColors.surface.withValues(alpha: 0.5),
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
+            return FloatingWidget(
+              amplitude: 6,
+              phase: index * 0.08,
+              child: Card(
+                color: AppColors.surface.withValues(alpha: 0.5),
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          iconMap[service.iconName] ?? Icons.code,
+                          color: AppColors.primary,
+                          size: 32,
+                        ),
                       ),
-                      child: Icon(
-                        iconMap[service.iconName] ?? Icons.code,
-                        color: AppColors.primary,
-                        size: 32,
+                      const SizedBox(height: 16),
+                      Text(
+                        service.title,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      service.title,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                      const SizedBox(height: 8),
+                      Text(
+                        service.description,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      service.description,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ).animate().scale(delay: (100 * index).ms);
@@ -373,77 +357,84 @@ class _HomePageState extends State<HomePage> {
       children: [
         _sectionTitle(context, "Experience"),
         const SizedBox(height: 24),
-        ...PortfolioData.experience.map(
-          (exp) => Padding(
-            padding: const EdgeInsets.only(bottom: 32.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      exp.role,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
+        ...List.generate(PortfolioData.experience.length, (i) {
+          final exp = PortfolioData.experience[i];
+          return AnimatedOnScroll(
+            delay: Duration(milliseconds: 80 * i),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 32.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        exp.role,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
                       ),
-                    ),
-                    Text(
-                      exp.duration,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondary,
+                      Text(
+                        exp.duration,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  exp.company,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
+                    ],
                   ),
-                ),
-                const SizedBox(height: 16),
-                ...exp.points.map(
-                  (point) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0, right: 12.0),
-                          child: Container(
-                            width: 6,
-                            height: 6,
-                            decoration: const BoxDecoration(
-                              color: AppColors.accent,
-                              shape: BoxShape.circle,
+                  const SizedBox(height: 4),
+                  Text(
+                    exp.company,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ...exp.points.map(
+                    (point) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              top: 8.0,
+                              right: 12.0,
+                            ),
+                            child: Container(
+                              width: 6,
+                              height: 6,
+                              decoration: const BoxDecoration(
+                                color: AppColors.accent,
+                                shape: BoxShape.circle,
+                              ),
                             ),
                           ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            point,
-                            style: Theme.of(context).textTheme.bodyLarge
-                                ?.copyWith(
-                                  height: 1.5,
-                                  color: AppColors.textPrimary.withValues(
-                                    alpha: 0.9,
+                          Expanded(
+                            child: Text(
+                              point,
+                              style: Theme.of(context).textTheme.bodyLarge
+                                  ?.copyWith(
+                                    height: 1.5,
+                                    color: AppColors.textPrimary.withValues(
+                                      alpha: 0.9,
+                                    ),
                                   ),
-                                ),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        }),
       ],
-    ).animate().fadeIn(delay: 550.ms);
+    );
   }
 
   Widget _buildEducation(BuildContext context) {
@@ -452,50 +443,56 @@ class _HomePageState extends State<HomePage> {
       children: [
         _sectionTitle(context, "Education"),
         const SizedBox(height: 24),
-        ...PortfolioData.education.map(
-          (edu) => Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Icon(
-                  Icons.school_rounded,
-                  color: AppColors.accent,
-                  size: 28,
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        edu.institution,
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        edu.degree,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        edu.duration,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary.withValues(alpha: 0.7),
-                        ),
-                      ),
-                    ],
+        ...List.generate(PortfolioData.education.length, (i) {
+          final edu = PortfolioData.education[i];
+          return AnimatedOnScroll(
+            delay: Duration(milliseconds: 80 * i),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(
+                    Icons.school_rounded,
+                    color: AppColors.accent,
+                    size: 28,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          edu.institution,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          edu.degree,
+                          style: Theme.of(context).textTheme.bodyLarge
+                              ?.copyWith(color: AppColors.textSecondary),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          edu.duration,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: AppColors.textSecondary.withValues(
+                                  alpha: 0.7,
+                                ),
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        }),
       ],
-    ).animate().fadeIn(delay: 575.ms);
+    );
   }
 
   Widget _buildSkills(BuildContext context) {
@@ -507,9 +504,16 @@ class _HomePageState extends State<HomePage> {
         Wrap(
           spacing: 12,
           runSpacing: 12,
-          children: PortfolioData.skills
-              .map(
-                (skill) => Chip(
+          children: List.generate(PortfolioData.skills.length, (i) {
+            final skill = PortfolioData.skills[i];
+            return AnimatedOnScroll(
+              delay: Duration(milliseconds: 40 * i),
+              axis: Axis.horizontal,
+              offset: 0.06,
+              child: FloatingWidget(
+                amplitude: 4,
+                phase: i * 0.06,
+                child: Chip(
                   label: Text(skill),
                   backgroundColor: AppColors.surface,
                   labelStyle: const TextStyle(color: AppColors.textPrimary),
@@ -521,11 +525,12 @@ class _HomePageState extends State<HomePage> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-              )
-              .toList(),
+              ),
+            );
+          }),
         ),
       ],
-    ).animate().fadeIn(delay: 600.ms);
+    );
   }
 
   Widget _buildProjects(BuildContext context) {
@@ -546,66 +551,70 @@ class _HomePageState extends State<HomePage> {
           itemCount: PortfolioData.projects.length,
           itemBuilder: (context, index) {
             final project = PortfolioData.projects[index];
-            return Card(
-              clipBehavior: Clip.antiAlias,
-              child: InkWell(
-                onTap: () {
-                  if (project.link != null) {
-                    launchUrlString(project.link!);
-                  }
-                },
-                hoverColor: AppColors.primary.withValues(alpha: 0.1),
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              project.title,
-                              style: Theme.of(context).textTheme.titleLarge
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          const Icon(
-                            Icons.arrow_outward,
-                            size: 20,
-                            color: AppColors.primary,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Expanded(
-                        child: Text(
-                          project.description,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(color: AppColors.textSecondary),
-                          maxLines: 4,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          ...project.tools.map(
-                            (t) => Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
+            return FloatingWidget(
+              amplitude: 6,
+              phase: index * 0.06,
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: () {
+                    if (project.link != null) {
+                      launchUrlString(project.link!);
+                    }
+                  },
+                  hoverColor: AppColors.primary.withValues(alpha: 0.1),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
                               child: Text(
-                                t,
-                                style: TextStyle(
-                                  color: AppColors.primary,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
+                                project.title,
+                                style: Theme.of(context).textTheme.titleLarge
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            const Icon(
+                              Icons.arrow_outward,
+                              size: 20,
+                              color: AppColors.primary,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Expanded(
+                          child: Text(
+                            project.description,
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: AppColors.textSecondary),
+                            maxLines: 4,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            ...project.tools.map(
+                              (t) => Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: Text(
+                                  t,
+                                  style: TextStyle(
+                                    color: AppColors.primary,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
