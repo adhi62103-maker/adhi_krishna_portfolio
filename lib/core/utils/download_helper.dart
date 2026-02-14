@@ -8,7 +8,12 @@ class DownloadUtils {
   static void downloadResume(String url, String fileName) {
     if (kIsWeb) {
       // On web, use the anchor tag to force download
-      helper.downloadFile(url, fileName);
+      // Flutter web assets are actually at assets/assets/...
+      String finalUrl = url;
+      if (url.startsWith('assets/') && !url.startsWith('assets/assets/')) {
+        finalUrl = 'assets/$url';
+      }
+      helper.downloadFile(finalUrl, fileName);
     } else {
       // On other platforms, launch the URL normally
       launchUrlString(url);
